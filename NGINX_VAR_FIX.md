@@ -7,7 +7,36 @@ frontend-1  | 2025/05/20 07:54:28 [emerg] 1#1: unknown "backend_port" variable
 frontend-1  | nginx: [emerg] unknown "backend_port" variable
 ```
 
+或者遇到以下构建错误：
+
+```
+ERROR [frontend production-stage 3/4] RUN echo '#!/bin/sh\nexport backend_port=${BACKEND_PORT:-5000}\nenvsubst \'$backend_port\'...
+/sh: syntax error: unterminated quoted string
+```
+
 请按照以下步骤修复问题：
+
+## 方法0: 使用自动修复脚本（推荐）
+
+我们提供了自动修复脚本，可以自动完成所有必要的更改：
+
+### Linux系统:
+```bash
+chmod +x fix_nginx_var.sh
+./fix_nginx_var.sh
+```
+
+### Windows系统:
+```cmd
+fix_nginx_var.bat
+```
+
+然后重新构建并启动容器：
+```bash
+docker-compose down
+docker-compose build frontend
+docker-compose up -d
+```
 
 ## 方法1: 使用已修复的代码重新构建
 
