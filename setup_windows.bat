@@ -2,150 +2,162 @@
 SETLOCAL EnableExtensions
 
 echo ===================================================
-echo »ùÓÚ´óÄ£ĞÍµÄ¹¤ÒµÖªÊ¶¿âÏµÍ³ - »·¾³´î½¨½Å±¾
+echo åŸºäºå¤§æ¨¡å‹çš„å·¥ä¸šçŸ¥è¯†åº“ç³»ç»Ÿ - å®‰è£…è„šæœ¬
 echo ===================================================
 echo.
 
-:: ¼ì²éPythonÊÇ·ñ°²×°
+:: æ£€æŸ¥Pythonæ˜¯å¦å®‰è£…
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [´íÎó] Î´¼ì²âµ½Python¡£Çë°²×°Python 3.9»ò¸ü¸ß°æ±¾¡£
+    echo [é”™è¯¯] æœªæ£€æµ‹åˆ°Pythonã€‚è¯·å®‰è£…Python 3.9æˆ–æ›´é«˜ç‰ˆæœ¬ã€‚
     goto :end
 )
 
-:: ¼ì²éPython°æ±¾
+:: è¯»å–Pythonç‰ˆæœ¬
 for /f "tokens=2" %%I in ('python --version 2^>^&1') do set PYTHON_VERSION=%%I
-echo ¼ì²âµ½Python°æ±¾: %PYTHON_VERSION%
+echo æ£€æµ‹åˆ°Pythonç‰ˆæœ¬: %PYTHON_VERSION%
 
-:: ¼ì²épipÊÇ·ñ¿ÉÓÃ
+:: æ£€æŸ¥pipæ˜¯å¦å®‰è£…
 python -m pip --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [´íÎó] Î´¼ì²âµ½pip¡£ÇëÈ·±£pipÒÑ°²×°¡£
+    echo [é”™è¯¯] æœªæ£€æµ‹åˆ°pipã€‚è¯·å®‰è£…pipä»¥ä¾¿å®‰è£…ä¾èµ–åŒ…ã€‚
     goto :end
 )
 
-:: ¼ì²éÊÇ·ñÒÑ¾­´æÔÚĞéÄâ»·¾³
+:: æ£€æŸ¥æ˜¯å¦å·²ç»åˆ›å»ºè™šæ‹Ÿç¯å¢ƒ
 if exist venv\ (
-    echo ¼ì²âµ½ÒÑ´æÔÚµÄĞéÄâ»·¾³¡£
-    choice /M "ÊÇ·ñÖØĞÂ´´½¨ĞéÄâ»·¾³£¿"
+    echo æ£€æµ‹åˆ°å·²æœ‰è™šæ‹Ÿç¯å¢ƒ
+    choice /M "æ˜¯å¦åˆ é™¤å¹¶é‡æ–°åˆ›å»ºè™šæ‹Ÿç¯å¢ƒï¼Ÿ"
     if errorlevel 2 goto activate_venv
     
-    echo É¾³ıÏÖÓĞĞéÄâ»·¾³...
+    echo åˆ é™¤æ—§çš„è™šæ‹Ÿç¯å¢ƒ...
     rmdir /S /Q venv
 )
 
-:: ´´½¨ĞéÄâ»·¾³
-echo ´´½¨ĞÂµÄĞéÄâ»·¾³...
+:: åˆ›å»ºè™šæ‹Ÿç¯å¢ƒ
+echo æ­£åœ¨åˆ›å»ºæ–°çš„è™šæ‹Ÿç¯å¢ƒ...
 python -m venv venv
 if %errorlevel% neq 0 (
-    echo [´íÎó] ´´½¨ĞéÄâ»·¾³Ê§°Ü¡£
+    echo [é”™è¯¯] åˆ›å»ºè™šæ‹Ÿç¯å¢ƒå¤±è´¥ã€‚
     goto :end
 )
 
 :activate_venv
-:: ¼¤»îĞéÄâ»·¾³
-echo ¼¤»îĞéÄâ»·¾³...
+:: æ¿€æ´»è™šæ‹Ÿç¯å¢ƒ
+echo æ¿€æ´»è™šæ‹Ÿç¯å¢ƒ...
 call venv\Scripts\activate
 if %errorlevel% neq 0 (
-    echo [´íÎó] ¼¤»îĞéÄâ»·¾³Ê§°Ü¡£
+    echo [é”™è¯¯] æ¿€æ´»è™šæ‹Ÿç¯å¢ƒå¤±è´¥ã€‚
     goto :end
 )
 
-:: Éı¼¶pip
-echo Éı¼¶pipµ½×îĞÂ°æ±¾...
+:: å‡çº§pip
+echo æ­£åœ¨å‡çº§pipåˆ°æœ€æ–°ç‰ˆæœ¬...
 python -m pip install --upgrade pip
 if %errorlevel% neq 0 (
-    echo [¾¯¸æ] Éı¼¶pipÊ§°Ü£¬¼ÌĞøÊ¹ÓÃµ±Ç°°æ±¾¡£
+    echo [è­¦å‘Š] å‡çº§pipå¤±è´¥ï¼Œç»§ç»­ä½¿ç”¨å½“å‰ç‰ˆæœ¬ã€‚
 )
 
-:: °²×°ºó¶ËÒÀÀµ
-echo °²×°ºó¶ËÒÀÀµ...
+:: å®‰è£…ä¾èµ–åŒ…
+echo æ­£åœ¨å®‰è£…ä¾èµ–åŒ…...
 if exist requirements-windows.txt (
-    echo Ê¹ÓÃWindows×¨ÓÃÒÀÀµÎÄ¼ş...
+    echo ä½¿ç”¨Windowsä¸“ç”¨ä¾èµ–æ–‡ä»¶...
     pip install -r requirements-windows.txt 2> pip_error.log
 ) else (
-    echo Ê¹ÓÃÍ¨ÓÃÒÀÀµÎÄ¼ş...
+    echo ä½¿ç”¨é€šç”¨ä¾èµ–æ–‡ä»¶...
     pip install -r requirements.txt 2> pip_error.log
 )
 
 if %errorlevel% neq 0 (
-    echo [¾¯¸æ] °²×°ÒÀÀµÊ±³öÏÖ´íÎó£¬Çë²é¿´pip_error.logÎÄ¼şÁË½âÏêÇé¡£
-    echo ³¢ÊÔµ¥¶À°²×°ºËĞÄÒÀÀµ...
+    echo [é”™è¯¯] å®‰è£…ä¾èµ–åŒ…æ—¶å‘ç”Ÿé”™è¯¯ï¼Œè¯·æŸ¥çœ‹pip_error.logæ–‡ä»¶è·å–è¯¦ç»†ä¿¡æ¯ã€‚
+    echo å°è¯•æ‰‹åŠ¨å®‰è£…å¸¸ç”¨ä¾èµ–åŒ…...
     pip install flask flask-cors flask-jwt-extended flask-sqlalchemy
     pip install SQLAlchemy PyMySQL python-dotenv Pillow requests bcrypt
     
     if %ERRORLEVEL% neq 0 (
-        echo [´íÎó] ºËĞÄÒÀÀµ°²×°Ê§°Ü£¬ÇëÊÖ¶¯¼ì²é»·¾³¡£
+        echo [é”™è¯¯] æŸäº›ä¾èµ–åŒ…å®‰è£…å¤±è´¥ï¼Œè¯·æ£€æŸ¥é”™è¯¯ä¿¡æ¯ã€‚
     ) else (
-        echo [ĞÅÏ¢] ºËĞÄÒÀÀµ°²×°³É¹¦¡£
+        echo [ä¿¡æ¯] å¸¸ç”¨ä¾èµ–åŒ…å®‰è£…æˆåŠŸã€‚
         if %PROCESSOR_ARCHITECTURE%==AMD64 (
-            echo ³¢ÊÔ°²×°pywin32...
+            echo æ£€æµ‹åˆ°64ä½ç³»ç»Ÿï¼Œå°è¯•å®‰è£…pywin32...
             pip install pywin32
         )
     )
 )
 
-:: ¼ì²éNode.jsÊÇ·ñ°²×°
+:: æ£€æŸ¥Node.jsæ˜¯å¦å®‰è£…
 node --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [¾¯¸æ] Î´¼ì²âµ½Node.js¡£Ç°¶Ë¿ª·¢ĞèÒªNode.js 14+¡£
+    echo [é”™è¯¯] æœªæ£€æµ‹åˆ°Node.jsã€‚è¯·å®‰è£…Node.js 14æˆ–æ›´é«˜ç‰ˆæœ¬ã€‚
     goto backend_setup
 )
 
-:: °²×°Ç°¶ËÒÀÀµ
-echo °²×°Ç°¶ËÒÀÀµ...
+:: å®‰è£…å‰ç«¯ä¾èµ–
+echo æ­£åœ¨å®‰è£…å‰ç«¯ä¾èµ–...
 cd frontend
 npm install
 if %errorlevel% neq 0 (
-    echo [¾¯¸æ] °²×°Ç°¶ËÒÀÀµÊ±³öÏÖ´íÎó£¬ÇëÊÖ¶¯¼ì²é¡£
+    echo [é”™è¯¯] å®‰è£…å‰ç«¯ä¾èµ–æ—¶å‘ç”Ÿé”™è¯¯ã€‚
 ) else (
-    echo ¼ì²é²¢ĞŞ¸´Ç°¶ËÒÀÀµµÄ°²È«Â©¶´...
+    echo ä¿®å¤å‰ç«¯ä¾èµ–ä¸­çš„å®‰å…¨æ¼æ´...
     npm audit fix
     if %errorlevel% neq 0 (
-        echo [¾¯¸æ] Ä³Ğ©°²È«Â©¶´ÎŞ·¨×Ô¶¯ĞŞ¸´£¬Çë²é¿´npm audit±¨¸æ¡£
+        echo [è­¦å‘Š] æŸäº›å®‰å…¨æ¼æ´æ— æ³•è‡ªåŠ¨ä¿®å¤ï¼Œè¯·æŸ¥çœ‹npm auditçš„è¾“å‡ºä¿¡æ¯ã€‚
     ) else (
-        echo [ĞÅÏ¢] °²È«Â©¶´ÒÑĞŞ¸´¡£
+        echo [ä¿¡æ¯] å‰ç«¯ä¾èµ–å®‰è£…å®Œæˆï¼Œä¸”å®‰å…¨æ¼æ´å·²ä¿®å¤ã€‚
     )
 )
 cd ..
 
 :backend_setup
-:: ¼ì²éºó¶ËÅäÖÃ
+:: åˆ›å»ºé…ç½®æ–‡ä»¶
 if not exist backend\config.env (
-    echo ´´½¨ºó¶ËÅäÖÃÎÄ¼ş...
+    echo åˆ›å»ºåç«¯é…ç½®æ–‡ä»¶...
     (
         echo SECRET_KEY=dev_secret_key
         echo JWT_SECRET_KEY=jwt_dev_secret_key
         echo DATABASE_URI=sqlite:///industrial_knowledge.db
+        echo PORT=5000
     ) > backend\config.env
-    echo [ÌáÊ¾] ÒÑ´´½¨Ä¬ÈÏÅäÖÃÎÄ¼ş¡£Éú²ú»·¾³ÇëĞŞ¸Äbackend\config.envÖĞµÄÃÜÔ¿ºÍÊı¾İ¿âÉèÖÃ¡£
+    echo [æç¤º] å·²åˆ›å»ºé»˜è®¤é…ç½®æ–‡ä»¶ã€‚ç”Ÿäº§ç¯å¢ƒè¯·ä¿®æ”¹backend\config.envä¸­çš„å¯†é’¥å’Œæ•°æ®åº“è®¾ç½®ã€‚
 )
 
-:: ¼ì²éSQLiteÊı¾İ¿âÊÇ·ñ´æÔÚ
+:: æ£€æŸ¥å‰ç«¯é…ç½®æ–‡ä»¶
+if not exist frontend\.env (
+    echo åˆ›å»ºå‰ç«¯ç¯å¢ƒé…ç½®æ–‡ä»¶...
+    (
+        echo FRONTEND_PORT=3000
+        echo BACKEND_PORT=5000
+        echo BACKEND_URL=http://localhost:5000
+    ) > frontend\.env
+    echo [æç¤º] å·²åˆ›å»ºå‰ç«¯ç¯å¢ƒé…ç½®æ–‡ä»¶ã€‚å¯ä»¥ä¿®æ”¹frontend\.envæ–‡ä»¶è‡ªå®šä¹‰ç«¯å£è®¾ç½®ã€‚
+)
+
+:: æ£€æŸ¥SQLiteæ•°æ®åº“æ˜¯å¦å­˜åœ¨
 if not exist backend\industrial_knowledge.db (
-    echo ³õÊ¼»¯Êı¾İ¿â...
+    echo åˆå§‹åŒ–æ•°æ®åº“...
     cd backend
     python init_db.py
     if %errorlevel% neq 0 (
-        echo [´íÎó] ³õÊ¼»¯Êı¾İ¿âÊ§°Ü¡£
+        echo [é”™è¯¯] åˆå§‹åŒ–æ•°æ®åº“å¤±è´¥ã€‚
         cd ..
         goto :end
     )
     cd ..
 )
 
-:: ¼ì²éMicrosoft Office (Word)
+:: æ£€æŸ¥Microsoft Office (Word)
 reg query "HKEY_CLASSES_ROOT\Word.Application" >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [¾¯¸æ] Î´¼ì²âµ½Microsoft Word¡£ÎÄµµ×ªPDF¹¦ÄÜ¿ÉÄÜ²»¿ÉÓÃ¡£
+    echo [è­¦å‘Š] æœªæ£€æµ‹åˆ°Microsoft Wordï¼Œæ— æ³•è½¬æ¢ä¸ºPDFæ ¼å¼ã€‚
 )
 
 echo.
 echo ===================================================
-echo »·¾³ÉèÖÃÍê³É£¡
+echo å®‰è£…å®Œæˆï¼
 echo.
-echo ÔËĞĞºó¶Ë: cd backend && python run.py
-echo ÔËĞĞÇ°¶Ë: cd frontend && npm run dev
+echo åç«¯å¯åŠ¨å‘½ä»¤: cd backend && python run.py
+echo å‰ç«¯å¯åŠ¨å‘½ä»¤: cd frontend && npm run dev
 echo ===================================================
 
 :end

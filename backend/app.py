@@ -25,6 +25,9 @@ app.config['JWT_HEADER_NAME'] = 'Authorization'
 app.config['JWT_HEADER_TYPE'] = 'Bearer'
 app.config['PROPAGATE_EXCEPTIONS'] = True  # 确保JWT异常被正确传播
 
+# 端口配置
+app.config['PORT'] = int(os.getenv('PORT', 5000))
+
 # 文件上传配置
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 if not os.path.exists(UPLOAD_FOLDER):

@@ -1,0 +1,35 @@
+# 忽略版本控制相关
+.git
+.gitignore
+.github
+
+# 忽略日志和临时文件
+*.log
+*.tmp
+*.swp
+*.bak
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.env
+.venv
+env/
+venv/
+ENV/
+*.sqlite3
+
+# 忽略本地开发环境
+.vscode/
+.idea/
+
+# 忽略文档和测试
+docs/
+tests/
+README.md
+*.md
+
+# 忽略不需要的大型文件
+backend/uploads/
+!backend/uploads/.gitkeep

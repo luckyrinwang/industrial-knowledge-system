@@ -13,6 +13,9 @@ RUN npm install
 # 复制源码
 COPY frontend/ .
 
+# 确保node_modules/.bin中的文件有执行权限
+RUN chmod +x node_modules/.bin/*
+
 # 构建生产版本
 RUN npm run build
 

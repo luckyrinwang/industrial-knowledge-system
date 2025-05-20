@@ -110,6 +110,42 @@ Linux平台使用LibreOffice和unoconv进行文档转换：
    python init_db.py
    ```
 
+## 端口配置
+
+系统支持自定义前后端服务的端口配置：
+
+### 后端端口配置
+
+1. 在`backend/config.env`文件中设置：
+   ```
+   PORT=5000  # 将5000更改为你希望使用的端口
+   ```
+
+2. 启动后端时将使用此端口：
+   ```bash
+   cd backend
+   python run.py  # 将使用config.env中的PORT配置
+   ```
+
+### 前端端口配置
+
+1. 在`frontend/.env`文件中设置：
+   ```
+   FRONTEND_PORT=3000
+   BACKEND_PORT=5000
+   BACKEND_URL=http://localhost:5000
+   ```
+
+2. 启动前端开发服务器：
+   ```bash
+   cd frontend
+   npm run dev  # 将使用.env中的FRONTEND_PORT配置
+   ```
+
+### 更多端口配置说明
+
+更详细的端口配置说明，请参考[端口配置使用指南](PORT_CONFIG_GUIDE.md)。
+
 ## 运行系统
 
 ### 运行后端

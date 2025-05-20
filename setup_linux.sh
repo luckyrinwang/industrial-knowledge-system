@@ -121,8 +121,20 @@ if [ ! -f "backend/config.env" ]; then
 SECRET_KEY=dev_secret_key
 JWT_SECRET_KEY=jwt_dev_secret_key
 DATABASE_URI=sqlite:///industrial_knowledge.db
+PORT=5000
 EOL
     echo "[提示] 已创建默认配置文件。生产环境请修改backend/config.env中的密钥和数据库设置。"
+fi
+
+# 检查前端配置
+if [ ! -f "frontend/.env" ]; then
+    echo "创建前端环境配置文件..."
+    cat > frontend/.env << EOL
+FRONTEND_PORT=3000
+BACKEND_PORT=5000
+BACKEND_URL=http://localhost:5000
+EOL
+    echo "[提示] 已创建前端环境配置文件。可以修改frontend/.env自定义端口设置。"
 fi
 
 # 检查数据库是否存在

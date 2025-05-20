@@ -27,6 +27,42 @@ docker-compose up -d
 
 ## 自定义配置
 
+### 端口配置
+
+1. **使用.env文件配置端口**（推荐方式）
+
+   在项目根目录创建`.env`文件：
+   ```
+   FRONTEND_PORT=80    # 前端服务端口
+   BACKEND_PORT=5000   # 后端服务端口
+   ```
+   
+   然后正常启动Docker：
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **通过命令行设置端口**
+
+   ```bash
+   FRONTEND_PORT=8080 BACKEND_PORT=5001 docker-compose up -d
+   ```
+
+3. **修改docker-compose.yml**
+
+   可以直接在`docker-compose.yml`中修改端口映射：
+   ```yaml
+   frontend:
+     ports:
+       - "8080:80"  # 将8080改为你希望的端口
+   
+   backend:
+     ports:
+       - "5001:5001"  # 将5001改为你希望的端口
+     environment:
+       - PORT=5001    # 确保这里也改为同样的端口
+   ```
+
 ### 修改环境变量
 
 编辑`docker-compose.yml`文件中的环境变量：

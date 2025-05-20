@@ -1,0 +1,55 @@
+# 后端Dockerfile - 减少网络依赖版本
+FROM python:3.9-slim AS builder
+
+# 设置国内Debian镜像源
+RUN echo 'deb https://mirrors.aliyun.com/debian/ bookworm main contrib non-free' > /etc/apt/sources.list && \
+    echo 'deb https://mirrors.aliyun.com/debian/ bookworm-updates main contrib non-free' >> /etc/apt/sources.list && \
+    echo 'deb https://mirrors.aliyun.com/debian-security bookworm-security main contrib non-free' >> /etc/apt/sources.list
+
+# 安装最小依赖集以获取功能
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        wget \
+        gnupg \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# 使用多阶段构建减小最终镜像大小
+FROM python:3.9-slim
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制依赖文件
+COPY requirements.txt .
+
+# 复制应用程序代码
+COPY backend/ .
+
+# 设置pip配置
+RUN pip config set global.timeout 300 && \
+    pip config set global.retries 10 && \
+    pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/ && \
+    pip config set global.trusted-host mirrors.aliyun.com
+
+# 安装Python依赖
+RUN pip install --no-cache-dir -r requirements.txt || \
+    pip install --no-cache-dir --default-timeout=300 -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple || \
+    pip install --no-cache-dir --default-timeout=500 -r requirements.txt -i https://pypi.org/simple
+
+# 创建上传目录
+RUN mkdir -p uploads && chmod 777 uploads
+
+# 设置一个替代方案，使用Python实现DOCX到PDF的转换
+# 这样可以不依赖于libreoffice和unoconv，减少安装复杂性
+RUN pip install python-docx docx2pdf
+
+# 从环境变量获取端口
+ENV PORT=5000
+
+# 暴露端口
+EXPOSE ${PORT}
+
+# 运行应用
+CMD ["python", "run.py"]
