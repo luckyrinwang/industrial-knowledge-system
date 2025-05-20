@@ -18,11 +18,10 @@ export function getFiles(page = 1, perPage = 20, fileType = null, searchQuery = 
   if (searchQuery) {
     params.search = searchQuery
   }
+    console.log('调用获取文件API, 参数:', params);
   
-  console.log('调用获取文件API, 参数:', params);
-  
-  // 确保URL与后端匹配，后端日志显示访问的是/files/而不是/api/files/
-  const url = '/files/';
+  // 修改URL格式，确保与后端和Nginx配置匹配
+  const url = '/files';
   console.log('请求URL:', url);
   
   return request({
