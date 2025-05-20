@@ -22,8 +22,8 @@ docker-compose up -d
 ```
 
 3. 访问系统：
-   - 前端界面: http://localhost
-   - 后端API: http://localhost/api
+   - 前端界面: http://localhost:3000
+   - 后端API: http://localhost:5000/api
 
 ## 自定义配置
 
@@ -33,7 +33,7 @@ docker-compose up -d
 
    在项目根目录创建`.env`文件：
    ```
-   FRONTEND_PORT=80    # 前端服务端口
+   FRONTEND_PORT=3000    # 前端服务端口
    BACKEND_PORT=5000   # 后端服务端口
    ```
    
