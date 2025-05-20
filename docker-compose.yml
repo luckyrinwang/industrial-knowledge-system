@@ -43,7 +43,8 @@ services:
       dockerfile: Dockerfile.frontend
     restart: always
     depends_on:
-      - backend      ports:
+      - backend      
+    ports:
       - "${FRONTEND_PORT:-3000}:80"
     environment:
       - BACKEND_URL=http://backend:${BACKEND_PORT:-5000}
