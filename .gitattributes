@@ -1,0 +1,2 @@
+# 通知Git将该文件以Unix风格的行尾符处理
+backend/start.sh text eol=lf
