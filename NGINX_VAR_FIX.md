@@ -1,142 +1,66 @@
-# Nginx变量问题修复指南
+# Nginx变量问题解决方案
 
-如果您在Linux上使用Docker部署时遇到以下错误：
+## 问题描述
+
+在Linux系统中部署项目时，前端容器出现以下错误：
 
 ```
-frontend-1  | 2025/05/20 07:54:28 [emerg] 1#1: unknown "backend_port" variable
+frontend-1  | 2025/05/20 08:27:37 [emerg] 1#1: unknown "backend_port" variable
 frontend-1  | nginx: [emerg] unknown "backend_port" variable
 ```
 
-或者遇到以下构建错误：
+这是因为Nginx配置文件中使用了`$backend_port`变量，但在Nginx启动前没有正确地设置这个变量或使用envsubst命令进行变量替换。
 
-```
-ERROR [frontend production-stage 3/4] RUN echo '#!/bin/sh\nexport backend_port=${BACKEND_PORT:-5000}\nenvsubst \'$backend_port\'...
-/sh: syntax error: unterminated quoted string
-```
+## 修复方法
 
-请按照以下步骤修复问题：
+1. **自动修复**：使用提供的`fix_and_deploy_linux.sh`脚本一键修复并部署项目
 
-## 方法0: 使用自动修复脚本（推荐）
-
-我们提供了自动修复脚本，可以自动完成所有必要的更改：
-
-### Linux系统:
 ```bash
-chmod +x fix_nginx_var.sh
-./fix_nginx_var.sh
+chmod +x fix_and_deploy_linux.sh
+./fix_and_deploy_linux.sh
 ```
 
-### Windows系统:
-```cmd
-fix_nginx_var.bat
-```
+2. **手动修复**：如果自动脚本不起作用，可按照以下步骤手动修复
 
-然后重新构建并启动容器：
-```bash
-docker-compose down
-docker-compose build frontend
-docker-compose up -d
-```
-
-## 方法1: 使用已修复的代码重新构建
-
-1. 拉取最新代码（如果您的代码仓库中已包含修复）
-   ```bash
-   git pull
+   a. 修改`Dockerfile.frontend`文件中的entrypoint脚本，确保正确处理变量：
+   
+   ```dockerfile
+   # 创建启动脚本
+   RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
+       echo 'export backend_port=${BACKEND_PORT:-5000}' >> /docker-entrypoint.sh && \
+       echo 'envsubst "\$backend_port" < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf' >> /docker-entrypoint.sh && \
+       echo 'exec nginx -g "daemon off;"' >> /docker-entrypoint.sh && \
+       chmod +x /docker-entrypoint.sh
    ```
-
-2. 重新构建并启动容器
+   
+   b. 确保`nginx.conf`文件使用正确的变量名：
+   
+   ```
+   proxy_pass http://backend:$backend_port;
+   ```
+   
+   c. 重新构建并启动容器：
+   
    ```bash
    docker-compose down
-   docker-compose build frontend
-   docker-compose up -d
+   docker-compose up --build -d
    ```
 
-## 方法2: 手动修复（如果您没有最新代码）
+## 技术说明
 
-1. 修改nginx.conf文件
-   ```bash
-   # 备份原始文件
-   cp nginx.conf nginx.conf.bak
-   
-   # 修改文件 - 将${BACKEND_PORT}替换为$backend_port
-   sed -i 's/${BACKEND_PORT}/$backend_port/g' nginx.conf
-   ```
+该问题是由Nginx处理环境变量的方式引起的。在Dockerfile.frontend中，我们需要：
 
-2. 创建一个docker-entrypoint.sh脚本
-   ```bash
-   cat > docker-entrypoint.sh << 'EOF'
-   #!/bin/sh
-   export backend_port=${BACKEND_PORT:-5000}
-   envsubst '$backend_port' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
-   nginx -g "daemon off;"
-   EOF
-   
-   chmod +x docker-entrypoint.sh
-   ```
+1. 将`nginx.conf`作为模板复制到容器中
+2. 在容器启动时，使用envsubst命令将环境变量替换到模板中
+3. 生成最终的Nginx配置文件
+4. 启动Nginx服务
 
-3. 修改Dockerfile.frontend
-   ```bash
-   # 备份原始文件
-   cp Dockerfile.frontend Dockerfile.frontend.bak
-   
-   # 修改文件 - 更改nginx配置文件的处理方式
-   sed -i 's|COPY nginx.conf /etc/nginx/conf.d/default.conf|COPY nginx.conf /etc/nginx/conf.d/default.conf.template|' Dockerfile.frontend
-   
-   # 修改启动命令
-   sed -i 's|CMD \["nginx", "-g", "daemon off;"\]|COPY docker-entrypoint.sh /\nCMD ["/docker-entrypoint.sh"]|' Dockerfile.frontend
-   ```
+在上述修复中，关键是正确转义`$`符号，并使用`exec`确保nginx进程接收到正确的信号（比如SIGTERM），这有助于容器的优雅关闭。
 
-4. 重新构建并启动容器
-   ```bash
-   docker-compose down
-   docker-compose build frontend
-   docker-compose up -d
-   ```
+## 防止问题再次发生
 
-## 方法3: 快速修复（无需修改文件）
+为了避免在不同环境中再次出现此问题，请确保：
 
-如果您不想修改任何文件，可以直接在运行时指定一个固定的后端端口：
-
-1. 修改docker-compose.yml
-   ```bash
-   # 备份原始文件
-   cp docker-compose.yml docker-compose.yml.bak
-   
-   # 在frontend服务中添加环境变量
-   # 找到frontend部分，添加下面的环境变量配置
-   sed -i '/frontend:/,/}/s/}/  environment:\n    - BACKEND_PORT=5000\n}/' docker-compose.yml
-   ```
-
-2. 重新启动容器
-   ```bash
-   docker-compose down
-   docker-compose up -d
-   ```
-
-## 检查修复是否成功
-
-修复后，您可以检查容器日志，确认问题是否解决：
-
-```bash
-docker-compose logs frontend
-```
-
-如果没有看到之前的错误，说明修复成功。
-
-## 进一步帮助
-
-如果上述方法都不起作用，您也可以直接进入容器内部手动修复：
-
-```bash
-# 进入前端容器
-docker-compose exec frontend sh
-
-# 在容器内修改nginx配置
-sed -i 's/${BACKEND_PORT}/5000/g' /etc/nginx/conf.d/default.conf
-
-# 重新加载nginx配置
-nginx -s reload
-```
-
-如需更多帮助，请参考项目的DOCKER_GUIDE.md文档或联系支持团队。
+1. 在部署前先运行`fix_nginx_var.sh`脚本
+2. 使用`fix_and_deploy_linux.sh`脚本进行部署
+3. 检查前端容器日志，确认没有Nginx配置错误
