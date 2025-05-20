@@ -10,6 +10,7 @@ marshmallow==3.13.0
 Werkzeug==2.0.1
 SQLAlchemy==1.4.23
 PyMySQL==1.0.2
+cryptography>=3.4.0
 python-docx
 requests>=2.25.0
 pywin32>=228

@@ -30,18 +30,18 @@ export FRONTEND_PORT=${FRONTEND_PORT:-3000}
 
 # 关闭可能正在运行的容器
 echo "3. 停止并删除现有容器（如果有）..."
-docker-compose down 2>/dev/null || true
+docker compose -p knowledge down 2>/dev/null || true
 
 # 构建并启动容器
 echo "4. 构建并启动Docker容器..."
-docker-compose up --build -d
+docker compose -p knowledge up --build -d
 
 # 检查容器是否成功启动
 echo "5. 检查容器状态..."
 sleep 5
-if docker-compose ps | grep -q "Exit"; then
+if docker compose -p knowledge ps | grep -q "Exit"; then
   echo "错误: 部分容器未能正常启动。"
-  docker-compose logs
+  docker compose -p knowledge logs
   exit 1
 fi
 
