@@ -1,0 +1,25 @@
+# 基于大模型的工业知识库系统 - Windows环境配置
+
+# Web框架及扩展
+flask==2.0.1
+flask-cors==3.0.10
+flask-jwt-extended==4.3.1
+flask-sqlalchemy==2.5.1
+Werkzeug==2.0.1
+
+# 数据库
+SQLAlchemy==1.4.25
+PyMySQL==1.0.2
+
+# 环境变量管理
+python-dotenv==0.19.1
+
+# 文件处理
+Pillow==8.3.2
+requests==2.26.0
+
+# Windows专用依赖
+pywin32==301
+
+# 其他工具
+bcrypt==3.2.0

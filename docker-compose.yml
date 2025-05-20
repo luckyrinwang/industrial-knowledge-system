@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+  # MySQL数据库
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: industrial_knowledge
+      MYSQL_USER: industrial_user
+      MYSQL_PASSWORD: industrial_password
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app_network
+
+  # 后端API服务
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      - SECRET_KEY=production_secret_key
+      - JWT_SECRET_KEY=production_jwt_secret_key
+      - DATABASE_URI=mysql+pymysql://industrial_user:industrial_password@db/industrial_knowledge
+    volumes:
+      - uploads_data:/app/uploads
+    networks:
+      - app_network
+
+  # 前端Web服务
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - app_network
+
+# 持久化卷
+volumes:
+  db_data:
+  uploads_data:
+
+# 网络配置
+networks:
+  app_network:
+    driver: bridge
