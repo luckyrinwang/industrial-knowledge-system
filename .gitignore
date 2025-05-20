@@ -1,3 +1,89 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
 /venv
 /backend/venv
-/backend/__pycache__
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 虚拟环境
+ENV/
+env/
+
+# 数据库
+*.sqlite
+*.db-journal
+
+# 日志文件
+*.log
+
+# 备份文件
+*.bak
+*.old
+*.tmp
+*~
+
+# IDE 文件
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 前端
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.DS_Store
+
+# 上传的文件
+backend/uploads/*
+!backend/uploads/document/
+!backend/uploads/image/
+!backend/uploads/md/
+!backend/uploads/pdf/
+!backend/uploads/spreadsheet/
+!backend/uploads/video/
+
+# 保留上传目录结构，但不保留文件
+backend/uploads/document/*
+backend/uploads/image/*
+backend/uploads/md/*
+backend/uploads/pdf/*
+backend/uploads/spreadsheet/*
+backend/uploads/video/*
+
+# 环境配置
+.env
+backend/config.env
+!backend/config.env.example
+frontend/.env
+!frontend/.env.example
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# 临时文件
+DOCKER_CLEANUP_BACKUP.md
+
+# 系统文件
+.DS_Store
+Thumbs.db

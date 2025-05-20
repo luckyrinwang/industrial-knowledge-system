@@ -148,6 +148,38 @@ docker exec industrial-knowledge-system_db_1 sh -c 'exec mysqldump -uroot -p"$MY
 
 ## 故障排除
 
+### 常见问题及解决方案
+
+#### 1. Debian 软件源连接超时
+
+**错误信息示例：**
+```
+Connection timed out [IP: 151.101.66.132 80]
+```
+
+**原因：** 网络环境限制，无法连接到官方Debian源。
+**解决方案：** Dockerfile.backend中已配置使用国内镜像源，确保仓库为最新版本。
+
+#### 2. Vite 权限问题
+
+**错误信息示例：**
+```
+sh: vite: Permission denied
+```
+
+**原因：** Docker容器内node_modules/.bin中的可执行文件没有执行权限。
+**解决方案：** Dockerfile.frontend中已添加chmod命令修复此问题。
+
+#### 3. pip安装依赖超时
+
+**错误信息示例：**
+```
+Read timed out. (read timeout=15)
+```
+
+**原因：** 网络连接不稳定或依赖包过大。
+**解决方案：** Dockerfile.backend中已配置使用国内PyPI镜像并增加超时时间。
+
 ### 容器无法启动
 检查日志：
 ```bash
@@ -165,3 +197,50 @@ docker-compose ps db
 ```bash
 docker exec -it industrial-knowledge-system_backend_1 ls -la /app/uploads
 ```
+
+## 高级配置
+
+### 使用离线依赖部署
+
+如果您的环境完全无法连接互联网，可以尝试以下方法：
+
+1. 在有网络的环境中下载所有依赖：
+   ```bash
+   # 创建pip缓存目录
+   mkdir -p pip_cache
+   # 下载所有Python依赖
+   pip download -r requirements.txt -d ./pip_cache
+   ```
+
+2. 复制依赖到您的部署环境，然后创建一个自定义Dockerfile：
+   ```dockerfile
+   # 离线部署Dockerfile
+   FROM python:3.9-slim
+   WORKDIR /app
+   COPY pip_cache /app/pip_cache
+   COPY requirements.txt .
+   RUN pip install --no-index --find-links=/app/pip_cache -r requirements.txt
+   COPY backend/ .
+   RUN mkdir -p uploads && chmod 777 uploads
+   CMD ["python", "run.py"]
+   ```
+
+### Docker网络优化
+
+如果您遇到Docker网络问题，可以尝试以下方法：
+
+1. 使用host网络模式：
+   ```yaml
+   services:
+     backend:
+       network_mode: "host"
+   ```
+
+2. 自定义DNS设置：
+   ```yaml
+   services:
+     backend:
+       dns:
+         - 8.8.8.8
+         - 114.114.114.114
+   ```
