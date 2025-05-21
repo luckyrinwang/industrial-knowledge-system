@@ -4,11 +4,11 @@
       <h2>文件管理</h2>
       <div class="header-actions">
         <el-button type="danger" @click="handleBatchDelete" :disabled="selectedFiles.length === 0">
-          <el-icon><delete /></el-icon>
+          <el-icon><DeleteFilled /></el-icon>
           批量删除 ({{ selectedFiles.length }})
         </el-button>
         <el-button type="primary" @click="showUploadDialog">
-          <el-icon><upload-filled /></el-icon>
+          <el-icon><UploadFilled /></el-icon>
           上传文件
         </el-button>
       </div>
@@ -34,7 +34,7 @@
           @input="handleSearch"
         >
           <template #prefix>
-            <el-icon><search /></el-icon>
+            <el-icon><Search /></el-icon>
           </template>
         </el-input>
       </div>
@@ -64,13 +64,13 @@
           <div class="file-checkbox">
             <el-checkbox v-model="file.isSelected" @change="updateSelection"></el-checkbox>
           </div>
-          <div class="file-icon">
-            <el-icon v-if="file.file_type === 'document'" size="24"><document /></el-icon>
-            <el-icon v-else-if="file.file_type === 'spreadsheet'" size="24"><grid /></el-icon>
-            <el-icon v-else-if="file.file_type === 'pdf'" size="24"><files /></el-icon>
-            <el-icon v-else-if="file.file_type === 'image'" size="24"><picture /></el-icon>
-            <el-icon v-else-if="file.file_type === 'video'" size="24"><video-camera /></el-icon>
-            <el-icon v-else size="24"><document /></el-icon>
+          <div class="file-icon file-thumb-animated">
+            <img v-if="file.file_type === 'document'" src="https://img.icons8.com/color/48/000000/ms-word.png" class="file-thumb-img" alt="文档" />
+            <img v-else-if="file.file_type === 'spreadsheet'" src="https://img.icons8.com/color/48/000000/ms-excel.png" class="file-thumb-img" alt="表格" />
+            <img v-else-if="file.file_type === 'pdf'" src="https://img.icons8.com/color/48/000000/pdf.png" class="file-thumb-img" alt="PDF" />
+            <img v-else-if="file.file_type === 'image'" src="https://img.icons8.com/color/48/000000/picture.png" class="file-thumb-img" alt="图片" />
+            <img v-else-if="file.file_type === 'video'" src="https://img.icons8.com/color/48/000000/video.png" class="file-thumb-img" alt="视频" />
+            <img v-else src="https://img.icons8.com/color/48/000000/file.png" class="file-thumb-img" alt="文件" />
           </div>
           <div class="file-info">
             <div class="file-name" @click="handlePreview(file)">{{ file.original_filename }}</div>
@@ -94,35 +94,35 @@
             <!-- 文档类PDF预览和下载（最左侧） -->
             <el-tooltip v-if="file.file_type === 'document' && file.pdf_path" content="PDF预览" placement="top">
               <el-button circle size="small" type="success" @click="handlePdfPreview(file)">
-                <el-icon><files /></el-icon>
+                <el-icon><Document /></el-icon>
               </el-button>
             </el-tooltip>
             <el-tooltip v-if="file.file_type === 'document' && file.pdf_path" content="PDF下载" placement="top">
               <el-button circle size="small" type="info" @click="handlePdfDownload(file)">
-                <el-icon><download /></el-icon>
+                <el-icon><DocumentRemove /></el-icon>
               </el-button>
             </el-tooltip>
             <!-- 原始文件预览（所有类型统一样式） -->
             <el-tooltip v-if="file.file_type !== 'spreadsheet'" content="预览" placement="top">
               <el-button circle size="small" type="primary" @click="handlePreview(file)">
-                <el-icon><view /></el-icon>
+                <el-icon><View /></el-icon>
               </el-button>
             </el-tooltip>
             <el-tooltip v-if="file.file_type === 'spreadsheet'" content="预览表格" placement="top">
               <el-button circle size="small" type="primary" @click="handleSpreadsheetPreview(file)">
-                <el-icon><view /></el-icon>
+                <el-icon><Grid /></el-icon>
               </el-button>
             </el-tooltip>
             <!-- 原始文件下载（所有类型统一样式） -->
             <el-tooltip content="下载" placement="top">
               <el-button circle size="small" type="primary" @click="handleDownload(file)">
-                <el-icon><download /></el-icon>
+                <el-icon><Download /></el-icon>
               </el-button>
             </el-tooltip>
             <!-- 原始文件删除（所有类型统一样式） -->
             <el-tooltip content="删除" placement="top">
               <el-button circle size="small" type="danger" @click="handleDelete(file)">
-                <el-icon><delete /></el-icon>
+                <el-icon><DeleteFilled /></el-icon>
               </el-button>
             </el-tooltip>
           </div>
@@ -268,7 +268,7 @@
           <iframe :src="getPdfPreviewUrl(previewFile)" width="100%" height="600"></iframe>
           <div style="margin-top: 10px; text-align: right;">
             <el-button type="info" @click="handlePdfDownload(previewFile)">
-              <el-icon><download /></el-icon> 下载PDF
+              <el-icon><DocumentRemove /></el-icon> 下载PDF
             </el-button>
           </div>
         </div>
@@ -291,7 +291,7 @@
           <el-empty description="该文件类型不支持在线预览，请下载后查看">
             <template #extra>
               <el-button type="primary" @click="handleDownload(previewFile)">
-                <el-icon><download /></el-icon>
+                <el-icon><Download /></el-icon>
                 下载文件
               </el-button>
             </template>
@@ -357,7 +357,13 @@
           >
             <div class="file-type-group">
               <div v-for="file in files" :key="file.id" class="file-type-item">
-                <el-icon><document v-if="type === 'document'" /><grid v-else-if="type === 'spreadsheet'" /><files v-else-if="type === 'pdf'" /><picture v-else-if="type === 'image'" /><video-camera v-else-if="type === 'video'" /></el-icon>
+                <el-icon>
+                  <Document v-if="type === 'document'" />
+                  <Grid v-else-if="type === 'spreadsheet'" />
+                  <DocumentRemove v-else-if="type === 'pdf'" />
+                  <Picture v-else-if="type === 'image'" />
+                  <VideoCamera v-else-if="type === 'video'" />
+                </el-icon>
                 <span class="file-name-small">{{ file.original_filename }}</span>
               </div>
             </div>
@@ -521,7 +527,7 @@ watch(() => uploadForm.fileType, () => {
 })
 
 // 获取文件列表
-const fetchFiles = async () => {
+async function fetchFiles() {
   loading.value = true
   console.log('开始获取文件列表', {
     page: currentPage.value,
@@ -529,7 +535,6 @@ const fetchFiles = async () => {
     fileType: fileTypeFilter.value || null,
     searchQuery: searchQuery.value || null
   })
-  
   try {
     const response = await getFiles(
       currentPage.value,
@@ -538,24 +543,21 @@ const fetchFiles = async () => {
       searchQuery.value || null
     )
     console.log('文件列表获取成功', response)
-    
     // 检查响应格式
     if (!response || typeof response !== 'object') {
       throw new Error('无效的响应格式')
     }
-    
     // 给每个文件添加选中属性
     files.value = Array.isArray(response.items) ? 
       response.items.map(file => ({
         ...file,
         isSelected: false
       })) : []
-    
     total.value = response.total || 0
-    
     // 重置选择状态
-    updateSelection()
-    
+    if (typeof updateSelection === 'function') {
+      updateSelection()
+    }
     // 如果没有文件，显示提示
     if (files.value.length === 0) {
       console.log('未找到任何文件')
@@ -1103,9 +1105,23 @@ const getFileTypeLabel = (fileType) => {
   
   return typeMap[fileType] || '未知类型';
 };
+
 </script>
 
 <style scoped>
+.file-thumb-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(30,60,114,0.10);
+  background: #f4f4f5;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.file-thumb-animated:hover .file-thumb-img {
+  transform: scale(1.12) rotate(-4deg);
+  box-shadow: 0 4px 16px #409eff33;
+}
 .file-management-container {
   padding: 20px;
 }
@@ -1413,4 +1429,5 @@ const getFileTypeLabel = (fileType) => {
   margin-bottom: 8px;
   font-size: 13px;
 }
-</style>
+</style>  background-color: #fdf6ec;
+  font-size: 13px;

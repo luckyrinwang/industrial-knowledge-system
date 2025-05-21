@@ -1,40 +1,45 @@
 <template>
-  <div class="login-container">
-    <div class="login-box">
-      <div class="login-title">
-        <h2>工业知识库系统</h2>
-      </div>
-      <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef" class="login-form">
-        <el-form-item prop="username">
-          <el-input
-            v-model="loginForm.username"
-            prefix-icon="el-icon-user"
-            placeholder="用户名"
-          />
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input
-            v-model="loginForm.password"
-            prefix-icon="el-icon-lock"
-            type="password"
-            placeholder="密码"
-            show-password
-            @keyup.enter="handleLogin"
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            type="primary"
-            :loading="loading"
-            class="login-button"
-            @click="handleLogin"
-          >
-            登录
-          </el-button>
-        </el-form-item>
-      </el-form>
-      <div class="login-tips">
-        <p>默认管理员账户: admin / admin123</p>
+  <div class="login-bg">
+    <div class="login-container">
+      <div class="login-box">
+        <div class="login-title">
+          <img src="/logo192.png" alt="logo" class="login-logo" />
+          <h2>工业知识库系统</h2>
+        </div>
+        <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef" class="login-form">
+          <el-form-item prop="username">
+            <el-input
+              v-model="loginForm.username"
+              prefix-icon="el-icon-user"
+              placeholder="用户名"
+              size="large"
+              clearable
+            />
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input
+              v-model="loginForm.password"
+              prefix-icon="el-icon-lock"
+              type="password"
+              placeholder="密码"
+              show-password
+              size="large"
+              clearable
+              @keyup.enter="handleLogin"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              type="primary"
+              :loading="loading"
+              class="login-button"
+              @click="handleLogin"
+              size="large"
+            >
+              登录
+            </el-button>
+          </el-form-item>
+        </el-form>
       </div>
     </div>
   </div>
@@ -93,38 +98,85 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-.login-container {
+.login-bg {
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+}
+
+.login-container {
+  width: 100vw;
   height: 100vh;
-  background-color: #f5f7fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .login-box {
-  width: 400px;
-  padding: 30px;
-  background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  width: 420px;
+  padding: 40px 36px 32px 36px;
+  background: rgba(255,255,255,0.98);
+  border-radius: 18px;
+  box-shadow: 0 8px 32px 0 rgba(30,60,114,0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.8s;
 }
 
 .login-title {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
+.login-logo {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(30,60,114,0.12);
+}
+.login-title h2 {
+  font-weight: 700;
+  font-size: 26px;
+  color: #1e3c72;
+  letter-spacing: 2px;
+}
 .login-form {
-  margin-bottom: 20px;
+  width: 100%;
+  margin-bottom: 18px;
 }
-
 .login-button {
   width: 100%;
+  background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+  border: none;
+  font-weight: 600;
+  letter-spacing: 1px;
+  transition: box-shadow 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(30,60,114,0.10);
 }
-
+.login-button:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(30,60,114,0.18);
+}
 .login-tips {
   text-align: center;
-  font-size: 14px;
-  color: #999;
+  font-size: 15px;
+  color: #409EFF;
+  margin-top: 10px;
+  background: rgba(64,158,255,0.08);
+  border-radius: 8px;
+  padding: 8px 0;
+  width: 100%;
+  letter-spacing: 1px;
 }
-</style> 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>

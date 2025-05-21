@@ -1,153 +1,164 @@
 <template>
-  <div class="user-management-container">
-    <div class="page-header">
-      <h2>用户管理</h2>
-      <el-button type="primary" @click="handleAddUser">
-        <el-icon><plus /></el-icon>
-        新增用户
-      </el-button>
-    </div>
-    
-    <!-- 脱机模式提示 -->
-    <el-alert
-      v-if="offlineMode"
-      title="当前处于脱机模式，数据变更仅在本地有效，未保存到服务器"
-      type="warning"
-      :closable="false"
-      show-icon
-      style="margin-bottom: 15px"
-    />
-    
-    <!-- 用户列表 -->
-    <el-card shadow="never">
-      <el-table
-        :data="users"
-        border
-        stripe
-        style="width: 100%"
-        v-loading="loading"
-      >
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="username" label="用户名" width="150" />
-        <el-table-column prop="email" label="邮箱" />
-        <el-table-column prop="full_name" label="姓名" width="150">
-          <template #default="scope">
-            <span>{{ scope.row.full_name || '-' }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="角色" width="200">
-          <template #default="scope">
-            <el-tag
-              v-for="role in scope.row.roles"
-              :key="role"
-              :type="getRoleType(role)"
-              size="small"
-              style="margin-right: 5px"
-            >
-              {{ role }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="状态" width="100">
-          <template #default="scope">
-            <el-tag :type="scope.row.is_active ? 'success' : 'danger'">
-              {{ scope.row.is_active ? '启用' : '禁用' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="200">
-          <template #default="scope">
-            <el-button 
-              size="small"
-              @click="handleEditUser(scope.row)"
-              :disabled="scope.row.username === 'admin' && userInfo.username !== 'admin'"
-            >
-              编辑
-            </el-button>
-            <el-button
-              size="small"
-              type="danger"
-              @click="handleDeleteUser(scope.row)"
-              :disabled="scope.row.username === 'admin' || scope.row.id === userInfo.id"
-            >
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      
-      <!-- 分页 -->
-      <div class="pagination-container">
-        <el-pagination
-          background
-          layout="total, sizes, prev, pager, next"
-          :page-sizes="[10, 20, 50, 100]"
-          :total="total"
-          :page-size="pageSize"
-          :current-page="currentPage"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+  <div class="user-management-bg">
+    <div class="user-management-container">
+      <div class="page-header">
+        <div class="header-left">
+          <el-icon class="header-icon"><UserFilled /></el-icon>
+          <h2>用户管理</h2>
+        </div>
+        <el-button type="primary" class="add-user-btn" @click="handleAddUser">
+          <el-icon><plus /></el-icon>
+          新增用户
+        </el-button>
       </div>
-    </el-card>
-    
-    <!-- 用户表单对话框 -->
-    <el-dialog
-      v-model="dialogVisible"
-      :title="isEdit ? '编辑用户' : '新增用户'"
-      width="550px"
-    >
-      <el-form
-        ref="userFormRef"
-        :model="userForm"
-        :rules="userRules"
-        label-width="80px"
-      >
-        <el-form-item label="用户名" prop="username" v-if="!isEdit">
-          <el-input v-model="userForm.username" placeholder="请输入用户名" />
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="userForm.email" placeholder="请输入邮箱" />
-        </el-form-item>
-        <el-form-item label="密码" prop="password" v-if="!isEdit">
-          <el-input v-model="userForm.password" type="password" show-password placeholder="请输入密码" />
-        </el-form-item>
-        <el-form-item label="姓名" prop="full_name">
-          <el-input v-model="userForm.full_name" placeholder="请输入姓名" />
-        </el-form-item>
-        <el-form-item label="状态" prop="is_active">
-          <el-switch
-            v-model="userForm.is_active"
-            active-text="启用"
-            inactive-text="禁用"
+      <!-- 脱机模式提示 -->
+      <el-alert
+        v-if="offlineMode"
+        title="当前处于脱机模式，数据变更仅在本地有效，未保存到服务器"
+        type="warning"
+        :closable="false"
+        show-icon
+        style="margin-bottom: 15px"
+      />
+      <!-- 用户列表 -->
+      <el-card shadow="always" class="user-table-card">
+        <el-table
+          :data="users"
+          border
+          stripe
+          style="width: 100%"
+          v-loading="loading"
+          class="user-table"
+        >
+          <el-table-column prop="id" label="ID" width="80" align="center"/>
+          <el-table-column prop="username" label="用户名" width="150" align="center"/>
+          <el-table-column prop="email" label="邮箱" align="center"/>
+          <el-table-column prop="full_name" label="姓名" width="150" align="center">
+            <template #default="scope">
+              <span>{{ scope.row.full_name || '-' }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="角色" width="200" align="center">
+            <template #default="scope">
+              <el-tag
+                v-for="role in scope.row.roles"
+                :key="role"
+                :type="getRoleType(role)"
+                size="small"
+                effect="dark"
+                style="margin-right: 5px"
+              >
+                {{ role }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="状态" width="100" align="center">
+            <template #default="scope">
+              <el-tag :type="scope.row.is_active ? 'success' : 'danger'" effect="plain">
+                {{ scope.row.is_active ? '启用' : '禁用' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="200" align="center">
+            <template #default="scope">
+              <el-button-group>
+                <el-button 
+                  size="small"
+                  @click="handleEditUser(scope.row)"
+                  :disabled="scope.row.username === 'admin' && userInfo.username !== 'admin'"
+                  type="primary"
+                  plain
+                >
+                  编辑
+                </el-button>
+                <el-button
+                  size="small"
+                  type="danger"
+                  plain
+                  @click="handleDeleteUser(scope.row)"
+                  :disabled="scope.row.username === 'admin' || scope.row.id === userInfo.id"
+                >
+                  删除
+                </el-button>
+              </el-button-group>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 分页 -->
+        <div class="pagination-container">
+          <el-pagination
+            background
+            layout="total, sizes, prev, pager, next"
+            :page-sizes="[10, 20, 50, 100]"
+            :total="total"
+            :page-size="pageSize"
+            :current-page="currentPage"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
           />
-        </el-form-item>
-        <el-form-item label="角色" prop="roles">
-          <el-checkbox-group v-model="userForm.roles">
-            <el-checkbox v-for="role in roleOptions" :key="role.name" :label="role.name">
-              {{ role.description }}
-            </el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitUserForm" :loading="submitting">
-            确定
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
+        </div>
+      </el-card>
+      <!-- 用户表单对话框 -->
+      <el-dialog
+        v-model="dialogVisible"
+        :title="isEdit ? '编辑用户' : '新增用户'"
+        width="480px"
+        class="user-dialog"
+      >
+        <el-form
+          ref="userFormRef"
+          :model="userForm"
+          :rules="userRules"
+          label-width="80px"
+          class="user-form"
+        >
+          <el-form-item label="用户名" prop="username" v-if="!isEdit">
+            <el-input v-model="userForm.username" placeholder="请输入用户名" clearable size="large" />
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="userForm.email" placeholder="请输入邮箱" clearable size="large" />
+          </el-form-item>
+          <el-form-item label="密码" prop="password" v-if="!isEdit">
+            <el-input v-model="userForm.password" type="password" show-password placeholder="请输入密码" clearable size="large" />
+          </el-form-item>
+          <el-form-item label="姓名" prop="full_name">
+            <el-input v-model="userForm.full_name" placeholder="请输入姓名" clearable size="large" />
+          </el-form-item>
+          <el-form-item label="状态" prop="is_active">
+            <el-switch
+              v-model="userForm.is_active"
+              active-text="启用"
+              inactive-text="禁用"
+            />
+          </el-form-item>
+          <el-form-item label="角色" prop="roles">
+            <el-checkbox-group v-model="userForm.roles">
+              <el-checkbox v-for="role in roleOptions" :key="role.name" :label="role.name">
+                {{ role.description }}
+              </el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="submitUserForm" :loading="submitting">
+              确定
+            </el-button>
+          </span>
+        </template>
+      </el-dialog>
+    </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useAuthStore } from '@/store/auth'
 import { getUsers, createUser, updateUser, deleteUser, getRoles } from '@/api/user'
-import { Plus } from '@element-plus/icons-vue'
+import { Plus, UserFilled } from '@element-plus/icons-vue'
 
 // 用户列表数据
 const users = ref([])
@@ -427,26 +438,122 @@ const submitUserForm = async () => {
 </script>
 
 <style scoped>
-.user-management-container {
-  padding: 10px;
+.user-management-bg {
+  min-height: 80vh;
+  width: 80vw;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e3eafc 100%);
+  padding: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
+.user-management-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 0 32px 0;
+  box-sizing: border-box;
+}
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
-
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-icon {
+  font-size: 32px;
+  color: #1e3c72;
+  background: #e3eafc;
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(30,60,114,0.10);
+}
 .page-header h2 {
   margin: 0;
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e3c72;
+  letter-spacing: 1px;
 }
-
+.add-user-btn {
+  font-weight: 600;
+  letter-spacing: 1px;
+  border-radius: 8px;
+  padding: 0 18px;
+}
+.user-table-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 24px 0 rgba(30,60,114,0.10);
+  margin-bottom: 32px;
+}
+.user-table {
+  border-radius: 12px;
+  overflow: hidden;
+}
+.el-table th {
+  background: linear-gradient(90deg, #e3eafc 0%, #f5f7fa 100%);
+  color: #1e3c72;
+  font-weight: 600;
+  font-size: 15px;
+}
+.el-table td {
+  font-size: 15px;
+}
 .pagination-container {
   margin-top: 20px;
   display: flex;
   justify-content: center;
 }
-</style> 
+.user-dialog >>> .el-dialog__header {
+  background: linear-gradient(90deg, #e3eafc 0%, #f5f7fa 100%);
+  border-radius: 12px 12px 0 0;
+}
+.user-dialog >>> .el-dialog__body {
+  padding-top: 18px;
+  padding-bottom: 0;
+}
+.user-form {
+  padding: 0 8px;
+}
+.user-form .el-form-item {
+  margin-bottom: 18px;
+}
+.user-form .el-input {
+  border-radius: 8px;
+}
+.user-form .el-checkbox-group {
+  display: flex;
+  gap: 12px;
+}
+.user-form .el-checkbox {
+  font-size: 15px;
+}
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 8px 0 2px 0;
+}
+@media (max-width: 900px) {
+  .user-management-container {
+    max-width: 98vw;
+    padding: 16px 2vw 16px 2vw;
+  }
+  .user-table-card {
+    padding: 0;
+  }
+  .page-header h2 {
+    font-size: 18px;
+  }
+  .header-icon {
+    font-size: 24px;
+    padding: 2px;
+  }
+}
+</style>

@@ -14,10 +14,10 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, ref, computed } from 'vue';
+import { computed } from 'vue';
 import config from '@/config';
 
-// 构建Dify URL
+// 构建 Dify URL
 const difyUrl = computed(() => {
   if (config.dify.useFullChatInterface) {
     return `${config.dify.baseUrl}/chat/${config.dify.token}`;
@@ -25,38 +25,20 @@ const difyUrl = computed(() => {
     return `${config.dify.baseUrl}/chatbot/${config.dify.token}`;
   }
 });
-
-// 调整iframe高度的函数
-const resizeIframe = () => {
-  const iframe = document.querySelector('.chatbot-iframe');
-  if (iframe) {
-    const container = document.querySelector('.chatbot-container');
-    if (container) {
-      iframe.style.height = `${container.clientHeight}px`;
-      iframe.style.width = `${container.clientWidth}px`;
-    }
-  }
-};
-
-onMounted(() => {
-  // 初始调整
-  resizeIframe();
-  // 添加窗口大小变化的监听器
-  window.addEventListener('resize', resizeIframe);
-});
-
-onBeforeUnmount(() => {
-  // 清理监听器
-  window.removeEventListener('resize', resizeIframe);
-});
 </script>
 
 <style scoped>
+/* 保证页面全高，外层容器需配合设置 height: 100% */
+html, body, #app {
+  height: 100%;
+  margin: 0;
+}
+
 .knowledge-container {
-  padding: 20px;
   height: 100%;
   display: flex;
   flex-direction: column;
+  padding: 20px;
   box-sizing: border-box;
 }
 
@@ -68,14 +50,15 @@ onBeforeUnmount(() => {
 }
 
 .chatbot-container {
-  flex: 1;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   margin-top: 20px;
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   position: relative;
-  min-height: v-bind('config.dify.iframe.minHeight');
-  /* 增加z-index确保iframe内容能够正确显示 */
   z-index: 1;
 }
 
@@ -83,9 +66,8 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   border: none;
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative; /* 替代 absolute，防止破坏布局 */
+  display: block;
 }
 
 h2 {

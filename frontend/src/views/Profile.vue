@@ -3,72 +3,81 @@
     <el-card class="profile-card">
       <template #header>
         <div class="card-header">
-          <h3>个人信息</h3>
+          <div class="avatar-box">
+            <el-avatar :size="64" icon="el-icon-user-solid" style="background: linear-gradient(135deg, #6fa1f7 0%, #a1e3ff 100%); color: #fff; font-size: 32px;">
+              {{ userInfo.full_name ? userInfo.full_name[0] : (userInfo.username ? userInfo.username[0] : 'U') }}
+            </el-avatar>
+          </div>
+          <div class="header-title-box">
+            <h3>个人信息</h3>
+            <div class="header-sub">完善您的个人资料，提升账户安全性</div>
+          </div>
           <el-button type="primary" size="small" @click="editMode = true" v-if="!editMode">
-            编辑资料
+            <el-icon><Edit /></el-icon> 编辑资料
           </el-button>
         </div>
       </template>
-      
+
       <div v-if="!editMode" class="user-info">
-        <div class="info-item">
-          <span class="label">用户名：</span>
-          <span>{{ userInfo.username }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">邮箱：</span>
-          <span>{{ userInfo.email }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">姓名：</span>
-          <span>{{ userInfo.full_name || '未设置' }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">角色：</span>
-          <span>{{ userRoles }}</span>
-        </div>
-        <div class="info-item">
-          <span class="label">注册时间：</span>
-          <span v-if="userInfo.created_at">
-            {{ formatDate(userInfo.created_at) || userInfo.created_at }}
-            <span style="color:#999;font-size:12px;">（{{ timeAgo(userInfo.created_at) }}）</span>
-          </span>
-          <span v-else>--</span>
-        </div>
+        <el-descriptions :column="1" border size="small">
+          <el-descriptions-item label="用户名">
+            <el-tag type="info" effect="plain">{{ userInfo.username }}</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="邮箱">
+            <el-tag type="success" effect="plain">{{ userInfo.email }}</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="姓名">
+            <el-tag v-if="userInfo.full_name" type="primary" effect="plain">{{ userInfo.full_name }}</el-tag>
+            <span v-else class="text-muted">未设置</span>
+          </el-descriptions-item>
+          <el-descriptions-item label="角色">
+            <el-tag type="warning" effect="plain">{{ userRoles }}</el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="注册时间">
+            <span v-if="userInfo.created_at">
+              {{ formatDate(userInfo.created_at) || userInfo.created_at }}
+              <span class="text-muted">（{{ timeAgo(userInfo.created_at) }}）</span>
+            </span>
+            <span v-else>--</span>
+          </el-descriptions-item>
+        </el-descriptions>
       </div>
-      
+
       <el-form 
         v-else
         ref="profileFormRef"
         :model="profileForm"
         :rules="formRules"
         label-width="80px"
+        class="profile-edit-form"
       >
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model="profileForm.email" placeholder="请输入邮箱" />
+          <el-input v-model="profileForm.email" placeholder="请输入邮箱" clearable prefix-icon="el-icon-message" />
         </el-form-item>
         <el-form-item label="姓名" prop="full_name">
-          <el-input v-model="profileForm.full_name" placeholder="请输入姓名" />
+          <el-input v-model="profileForm.full_name" placeholder="请输入姓名" clearable prefix-icon="el-icon-user" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="updateProfile">保存</el-button>
-          <el-button @click="cancelEdit">取消</el-button>
+          <el-button type="primary" @click="updateProfile" :loading="loading"><el-icon><Check /></el-icon> 保存</el-button>
+          <el-button @click="cancelEdit"><el-icon><Close /></el-icon> 取消</el-button>
         </el-form-item>
       </el-form>
     </el-card>
-    
+
     <el-card class="password-card">
       <template #header>
         <div class="card-header">
+          <el-icon style="margin-right:8px;"><Lock /></el-icon>
           <h3>修改密码</h3>
         </div>
       </template>
-      
+
       <el-form 
         ref="passwordFormRef"
         :model="passwordForm"
         :rules="passwordRules"
         label-width="100px"
+        class="password-form"
       >
         <el-form-item label="原密码" prop="old_password">
           <el-input
@@ -76,6 +85,7 @@
             type="password"
             show-password
             placeholder="请输入原密码"
+            prefix-icon="el-icon-lock"
           />
         </el-form-item>
         <el-form-item label="新密码" prop="new_password">
@@ -84,6 +94,7 @@
             type="password"
             show-password
             placeholder="请输入新密码"
+            prefix-icon="el-icon-key"
           />
         </el-form-item>
         <el-form-item label="确认密码" prop="confirm_password">
@@ -92,11 +103,12 @@
             type="password"
             show-password
             placeholder="请再次输入新密码"
+            prefix-icon="el-icon-key"
           />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="changePassword" :loading="loading">
-            修改密码
+            <el-icon><Refresh /></el-icon> 修改密码
           </el-button>
         </el-form-item>
       </el-form>
@@ -278,39 +290,97 @@ const changePassword = async () => {
 </script>
 
 <style scoped>
+/* 个人中心美化样式 */
 .profile-container {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 600px;
+  margin: 32px auto 0 auto;
+  padding-bottom: 32px;
 }
 
 .profile-card, .password-card {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  border-radius: 14px;
+  box-shadow: 0 4px 24px 0 rgba(64,158,255,0.08);
+  border: none;
 }
 
 .card-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 18px;
+  padding-bottom: 4px;
 }
 
-.card-header h3 {
-  margin: 0;
+.avatar-box {
+  margin-right: 10px;
+}
+
+.header-title-box {
+  flex: 1;
+}
+
+.header-title-box h3 {
+  margin: 0 0 2px 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #222;
+}
+
+.header-sub {
+  font-size: 13px;
+  color: #8a99b3;
 }
 
 .user-info {
-  padding: 10px 0;
+  padding: 18px 0 6px 0;
 }
 
-.info-item {
-  margin-bottom: 15px;
-  line-height: 1.5;
+.el-descriptions {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 10px 0 0 0;
 }
 
-.label {
-  font-weight: bold;
-  color: #606266;
-  margin-right: 10px;
-  display: inline-block;
-  width: 80px;
+.el-descriptions__label {
+  color: #6c7a89;
+  font-weight: 500;
+}
+
+.el-tag {
+  font-size: 13px;
+  padding: 0 10px;
+}
+
+.text-muted {
+  color: #b0b8c9;
+  font-size: 13px;
+}
+
+.profile-edit-form {
+  padding: 18px 0 6px 0;
+}
+
+.profile-edit-form .el-input {
+  max-width: 320px;
+}
+
+.profile-edit-form .el-button {
+  min-width: 90px;
+}
+
+.password-card {
+  background: linear-gradient(135deg, #f8fbff 0%, #eaf6ff 100%);
+}
+
+.password-form {
+  padding: 18px 0 6px 0;
+}
+
+.password-form .el-input {
+  max-width: 320px;
+}
+
+.password-form .el-button {
+  min-width: 120px;
 }
 </style> 
