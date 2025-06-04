@@ -56,31 +56,39 @@ docker-compose up -d
 
 #### 中国地区部署说明
 
-由于网络原因，在中国地区部署时可能会遇到镜像下载超时问题。本项目已针对中国网络环境进行优化：
+由于网络原因，在中国地区部署时可能会遇到镜像下载超时问题。本项目提供多种解决方案：
 
-**自动配置镜像源（推荐）:**
+**方案1：一键部署（最简单）**
 ```bash
-# Linux系统
-sudo bash setup_docker_mirrors.sh
-
-# Windows系统
-setup_docker_mirrors.bat
+# 下载项目后，直接运行一键部署脚本
+chmod +x deploy_china.sh
+sudo ./deploy_china.sh
 ```
 
-**手动配置Docker镜像源:**
+**方案2：分步部署**
 ```bash
-# Linux系统
-sudo cp daemon.json /etc/docker/daemon.json
-sudo systemctl daemon-reload
-sudo systemctl restart docker
-```
+# 步骤1：修复Docker镜像源
+chmod +x docker_fix.sh
+sudo ./docker_fix.sh
 
-然后重新部署：
-```bash
+# 步骤2：部署项目
 docker compose -p knowledge up -d --build
 ```
 
-详细的中国部署指南请参考：[Docker中国镜像源配置指南](DOCKER_CHINA_MIRRORS.md)
+**方案3：手动拉取镜像**
+```bash
+# 如果镜像源仍然不可用，手动拉取基础镜像
+docker pull python:3.9-slim
+docker pull node:16-alpine
+docker pull nginx:stable-alpine
+
+# 然后部署项目
+docker compose -p knowledge up -d --build
+```
+
+**故障排除指南：**
+- [Docker快速修复指南](DOCKER_QUICK_FIX.md)
+- [详细镜像源配置](DOCKER_CHINA_MIRRORS.md)
 
 #### 普通部署
 详细说明请参考 [Docker环境使用指南](DOCKER_GUIDE.md)。

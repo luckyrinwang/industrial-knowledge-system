@@ -14,10 +14,10 @@ sudo mkdir -p /etc/docker
 sudo tee /etc/docker/daemon.json <<-'EOF'
 {
   "registry-mirrors": [
-    "https://registry.cn-hangzhou.aliyuncs.com",
     "https://docker.mirrors.ustc.edu.cn",
     "https://hub-mirror.c.163.com",
-    "https://mirror.baidubce.com"
+    "https://mirror.baidubce.com",
+    "https://dockerproxy.com"
   ]
 }
 EOF
@@ -56,9 +56,9 @@ docker compose -p knowledge up -d --build
 本项目已经配置了以下中国镜像源：
 
 ### Docker基础镜像
-- 后端：`registry.cn-hangzhou.aliyuncs.com/library/python:3.9-slim`
-- 前端：`registry.cn-hangzhou.aliyuncs.com/library/node:16-alpine`
-- Nginx：`registry.cn-hangzhou.aliyuncs.com/library/nginx:stable-alpine`
+- 后端：`python:3.9-slim`（通过镜像源代理下载）
+- 前端：`node:16-alpine`（通过镜像源代理下载）
+- Nginx：`nginx:stable-alpine`（通过镜像源代理下载）
 
 ### Python包镜像源
 - 阿里云：`https://mirrors.aliyun.com/pypi/simple/`

@@ -1,4 +1,5 @@
 #!/bin/bash
+# 执行前请添加执行权限: chmod +x setup_docker_mirrors.sh
 
 # Docker中国镜像源快速配置脚本
 # 适用于Linux系统
@@ -27,10 +28,10 @@ echo "写入Docker镜像源配置..."
 cat > /etc/docker/daemon.json << EOF
 {
   "registry-mirrors": [
-    "https://registry.cn-hangzhou.aliyuncs.com",
     "https://docker.mirrors.ustc.edu.cn",
     "https://hub-mirror.c.163.com",
-    "https://mirror.baidubce.com"
+    "https://mirror.baidubce.com",
+    "https://dockerproxy.com"
   ],
   "insecure-registries": [],
   "debug": false,
@@ -38,7 +39,9 @@ cat > /etc/docker/daemon.json << EOF
   "features": {
     "buildkit": true
   },
-  "dns": ["8.8.8.8", "114.114.114.114"]
+  "dns": ["8.8.8.8", "114.114.114.114"],
+  "max-concurrent-downloads": 3,
+  "max-concurrent-uploads": 5
 }
 EOF
 
