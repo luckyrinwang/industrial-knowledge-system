@@ -1,6 +1,6 @@
 # 前端Dockerfile
-# 使用官方Node.js镜像，但通过配置的镜像源下载
-FROM node:16-alpine as build-stage
+# 使用阿里云镜像源的Node.js基础镜像
+FROM registry.cn-hangzhou.aliyuncs.com/library/node:16-alpine as build-stage
 
 # 设置工作目录
 WORKDIR /app
@@ -26,8 +26,8 @@ RUN chmod +x node_modules/.bin/*
 RUN npm run build
 
 # 生产阶段
-# 使用官方Nginx镜像，但通过配置的镜像源下载
-FROM nginx:stable-alpine as production-stage
+# 使用阿里云镜像源的Nginx基础镜像
+FROM registry.cn-hangzhou.aliyuncs.com/library/nginx:stable-alpine as production-stage
 
 # 从构建阶段复制构建结果到nginx静态资源目录
 COPY --from=build-stage /app/dist /usr/share/nginx/html

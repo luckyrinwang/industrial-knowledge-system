@@ -1,11 +1,9 @@
 {
   "registry-mirrors": [
-    "https://docker.1ms.run",
-    "https://docker.xuanyuan.me/",
+    "https://registry.cn-hangzhou.aliyuncs.com",
     "https://docker.mirrors.ustc.edu.cn",
     "https://hub-mirror.c.163.com",
-    "https://mirror.baidubce.com",
-    "https://dockerproxy.com"
+    "https://mirror.baidubce.com"
   ],
   "insecure-registries": [],
   "debug": false,
@@ -13,7 +11,5 @@
   "features": {
     "buildkit": true
   },
-  "dns": ["8.8.8.8", "114.114.114.114"],
-  "max-concurrent-downloads": 3,
-  "max-concurrent-uploads": 5
+  "dns": ["8.8.8.8", "114.114.114.114"]
 }

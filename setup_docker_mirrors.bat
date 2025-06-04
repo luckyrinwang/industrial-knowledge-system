@@ -13,10 +13,10 @@ echo 4. 在配置文件中添加以下内容：
 echo.
 echo {
 echo   "registry-mirrors": [
+echo     "https://registry.cn-hangzhou.aliyuncs.com",
 echo     "https://docker.mirrors.ustc.edu.cn",
 echo     "https://hub-mirror.c.163.com",
-echo     "https://mirror.baidubce.com",
-echo     "https://dockerproxy.com"
+echo     "https://mirror.baidubce.com"
 echo   ]
 echo }
 echo.
