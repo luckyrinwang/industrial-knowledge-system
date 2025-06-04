@@ -1,8 +1,0 @@
-{
-  "status": "success",
-  "message": "提问成功",
-  "data": {
-    "answer": "",
-    "references": []
-  }
-}
