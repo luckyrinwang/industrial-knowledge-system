@@ -54,35 +54,6 @@ chmod +x setup_linux.sh
 docker-compose up -d
 ```
 
-#### 中国地区部署说明
-
-由于网络原因，在中国地区部署时可能会遇到镜像下载超时问题。本项目已针对中国网络环境进行优化：
-
-**自动配置镜像源（推荐）:**
-```bash
-# Linux系统
-sudo bash setup_docker_mirrors.sh
-
-# Windows系统
-setup_docker_mirrors.bat
-```
-
-**手动配置Docker镜像源:**
-```bash
-# Linux系统
-sudo cp daemon.json /etc/docker/daemon.json
-sudo systemctl daemon-reload
-sudo systemctl restart docker
-```
-
-然后重新部署：
-```bash
-docker compose -p knowledge up -d --build
-```
-
-详细的中国部署指南请参考：[Docker中国镜像源配置指南](DOCKER_CHINA_MIRRORS.md)
-
-#### 普通部署
 详细说明请参考 [Docker环境使用指南](DOCKER_GUIDE.md)。
 
 ### 3. 手动配置
