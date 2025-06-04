@@ -1,5 +1,6 @@
 # 前端Dockerfile
-FROM node:16-alpine as build-stage
+# 使用阿里云镜像源的Node.js基础镜像
+FROM registry.cn-hangzhou.aliyuncs.com/library/node:16-alpine as build-stage
 
 # 设置工作目录
 WORKDIR /app
@@ -7,8 +8,13 @@ WORKDIR /app
 # 复制package.json和package-lock.json
 COPY frontend/package*.json ./
 
-# 安装依赖
-RUN npm install
+# 配置npm使用中国镜像源并安装依赖
+RUN npm config set registry https://registry.npmmirror.com && \
+    npm config set timeout 300000 && \
+    npm config set network-timeout 300000 && \
+    npm install || \
+    (npm config set registry https://registry.npm.taobao.org && npm install) || \
+    (npm config set registry https://mirrors.cloud.tencent.com/npm/ && npm install)
 
 # 复制源码
 COPY frontend/ .
@@ -20,7 +26,8 @@ RUN chmod +x node_modules/.bin/*
 RUN npm run build
 
 # 生产阶段
-FROM nginx:stable-alpine as production-stage
+# 使用阿里云镜像源的Nginx基础镜像
+FROM registry.cn-hangzhou.aliyuncs.com/library/nginx:stable-alpine as production-stage
 
 # 从构建阶段复制构建结果到nginx静态资源目录
 COPY --from=build-stage /app/dist /usr/share/nginx/html
