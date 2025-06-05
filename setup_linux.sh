@@ -62,7 +62,7 @@ fi
 # 检查LibreOffice是否安装
 if ! command -v libreoffice &> /dev/null; then
     echo "[警告] 未检测到LibreOffice。文档转换功能需要LibreOffice。"
-    read -p "是否安装LibreOffice? (y/n): " -n 1 -r
+    read -p "是否安装LibreOffice和中文字体? (y/n): " -n 1 -r
     echo ""
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         # 检测Linux发行版
@@ -70,13 +70,57 @@ if ! command -v libreoffice &> /dev/null; then
             # Debian/Ubuntu
             echo "检测到Debian/Ubuntu系统，使用apt安装..."
             sudo apt update
-            sudo apt install -y libreoffice
+            sudo apt install -y libreoffice \
+                ca-certificates \
+                fonts-noto-cjk \
+                fonts-arphic-ukai \
+                fonts-arphic-uming \
+                fonts-wqy-zenhei \
+                fonts-wqy-microhei
         elif [ -f /etc/redhat-release ]; then
             # CentOS/RHEL
             echo "检测到CentOS/RHEL系统，使用yum安装..."
-            sudo yum install -y libreoffice
+            sudo yum install -y libreoffice \
+                google-noto-cjk-fonts \
+                wqy-microhei-fonts \
+                wqy-zenhei-fonts
         else
-            echo "[错误] 无法确定Linux发行版，请手动安装LibreOffice。"
+            echo "[错误] 无法确定Linux发行版，请手动安装LibreOffice和中文字体。"
+        fi
+    fi
+else
+    # LibreOffice已安装，检查中文字体
+    echo "LibreOffice已安装，检查中文字体..."
+    FONTS_MISSING=false
+    
+    # 检查常见中文字体目录
+    if [ ! -d "/usr/share/fonts/truetype/wqy" ] && [ ! -d "/usr/share/fonts/opentype/noto" ]; then
+        FONTS_MISSING=true
+    fi
+    
+    if [ "$FONTS_MISSING" = true ]; then
+        echo "[警告] 可能缺少中文字体，这可能导致PDF转换中文乱码。"
+        read -p "是否安装中文字体? (y/n): " -n 1 -r
+        echo ""
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            if [ -f /etc/debian_version ]; then
+                # Debian/Ubuntu
+                sudo apt update
+                sudo apt install -y fonts-noto-cjk \
+                    fonts-arphic-ukai \
+                    fonts-arphic-uming \
+                    fonts-wqy-zenhei \
+                    fonts-wqy-microhei
+            elif [ -f /etc/redhat-release ]; then
+                # CentOS/RHEL
+                sudo yum install -y google-noto-cjk-fonts \
+                    wqy-microhei-fonts \
+                    wqy-zenhei-fonts
+            fi
+            
+            # 更新字体缓存
+            echo "更新字体缓存..."
+            sudo fc-cache -f -v
         fi
     fi
 fi
@@ -154,6 +198,25 @@ fi
 echo "设置uploads目录权限..."
 mkdir -p backend/uploads
 chmod -R 755 backend/uploads
+
+# 检查系统locale设置
+echo "检查系统中文locale设置..."
+if ! locale -a | grep -q "zh_CN.utf8\|zh_CN.UTF-8"; then
+    echo "[警告] 系统可能缺少中文locale，这可能影响中文PDF转换。"
+    read -p "是否配置中文locale? (y/n): " -n 1 -r
+    echo ""
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        if [ -f /etc/debian_version ]; then
+            # Debian/Ubuntu
+            sudo apt install -y locales
+            echo "zh_CN.UTF-8 UTF-8" | sudo tee -a /etc/locale.gen
+            sudo locale-gen
+        elif [ -f /etc/redhat-release ]; then
+            # CentOS/RHEL
+            sudo yum install -y glibc-locale-source glibc-langpack-zh
+        fi
+    fi
+fi
 
 echo ""
 echo "==================================================="

@@ -112,34 +112,40 @@ if sys.platform.startswith('win'):
                 print(f"COM资源释放时出错: {str(e)}")
 else:
     import subprocess
+    import os
 
     def docx_to_pdf(input_path, output_path):
         """
-        Linux下用unoconv+LibreOffice将doc/docx转为pdf。
+        用 LibreOffice 直接将 Word 转换为 PDF，不依赖 unoconv。
         """
         try:
             # 确保输入路径存在
             if not os.path.exists(input_path):
                 raise FileNotFoundError(f"输入文件不存在: {input_path}")
-                
+
             # 确保输出目录存在
             output_dir = os.path.dirname(output_path)
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir, exist_ok=True)
-                
-            # 使用绝对路径
-            abs_input_path = os.path.abspath(input_path)
-            abs_output_path = os.path.abspath(output_path)
-            
-            # 执行转换
+
+            # 使用 LibreOffice 转换
             subprocess.check_call([
-                'unoconv', '-f', 'pdf', '-o', abs_output_path, abs_input_path
+                'soffice', '--headless', '--convert-to', 'pdf',
+                '--outdir', output_dir, input_path
             ])
-            
-            # 确保文件已经生成
-            if not os.path.exists(abs_output_path):
-                raise FileNotFoundError(f"PDF文件未能生成: {abs_output_path}")
-                
+
+            # 检查是否生成PDF（LibreOffice命名为相同文件名.pdf）
+            base_name = os.path.splitext(os.path.basename(input_path))[0]
+            converted_path = os.path.join(output_dir, base_name + '.pdf')
+
+            if not os.path.exists(converted_path):
+                raise FileNotFoundError(f"PDF未生成: {converted_path}")
+
+            # 重命名到目标路径
+            if os.path.abspath(converted_path) != os.path.abspath(output_path):
+                os.rename(converted_path, output_path)
+
             return True
         except Exception as e:
-            raise RuntimeError(f"unoconv转换失败: {str(e)}")
+            raise RuntimeError(f"LibreOffice转换失败: {str(e)}")
+
